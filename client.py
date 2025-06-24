@@ -1,50 +1,9 @@
 import requests
-
-PI_IPS = {
-    "row1": "http://172.18.82.5:5000",
-    "row2": "http://172.18.82.6:5000",
-    "row4": "http://172.18.82.4:5000",
-    "row5": "http://172.18.82.7:5000"
-}
-
-FALLBACK_SCOPE_LABELS = {
-    "row1": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
-    "row2": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
-    "row4": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
-    "row5": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"]
-}
-
-# Updated serial to label mapping
-SERIAL_TO_LABEL = {
-    "row1": {
-        "GEY180247": "H5",
-        "GEY180248": "H6",
-        "GEY180255": "G5",
-        "GES141341": "G6"
-    },
-    "row2": {
-        "GEY180245": "H3",
-        "GEY180251": "G3",
-        "GEY180246": "H4",
-        "GEY180252": "G4"
-    },
-    "row4": {
-        "GES854611": "F5",
-        "GES854606": "E5",
-        "GES854615": "F6",
-        "GES854612": "E6"
-    },
-    "row5": {
-        "GES141338": "F3",
-        "GES141335": "E3",
-        "GES854607": "F4",
-        "GES141334": "E4"
-    },
-}
+import labels
 
 def check_server(target):
     try:
-        res = requests.get(f"{PI_IPS[target]}/", timeout=2)
+        res = requests.get(f"{labels.PI_IPS[target]}/", timeout=2)
         if res.status_code == 200:
             row_name = res.json().get("osc_row", "?")
             print(f"{target}: ✅ {row_name} is active.")
@@ -69,7 +28,7 @@ def get_scope_selection():
 def send_command(command_name):
     row = input("Select row (row1, row2 ,row3,row4, row5 or all): ").strip()
     scope_indices = get_scope_selection()
-    targets = PI_IPS.keys() if row == 'all' else [row]
+    targets = labels.PI_IPS.keys() if row == 'all' else [row]
 
     for target in targets:
         if not check_server(target):
@@ -77,7 +36,7 @@ def send_command(command_name):
         for i in scope_indices:
             label = resolve_label_from_id(target, i)
             try:
-                res = requests.get(f"{PI_IPS[target]}/{command_name}", params={"scope": i}, timeout=3)
+                res = requests.get(f"{labels.PI_IPS[target]}/{command_name}", params={"scope": i}, timeout=3)
                 res_json = res.json()
                 print(f"{target} - {label}: {res_json.get('message', 'No response')}")
             except Exception:
@@ -86,22 +45,22 @@ def send_command(command_name):
 
 def resolve_label_from_id(target, index):
     try:
-        res = requests.get(f"{PI_IPS[target]}/idn", params={"scope": index}, timeout=3)
+        res = requests.get(f"{labels.PI_IPS[target]}/idn", params={"scope": index}, timeout=3)
         res_json = res.json()
         if res_json.get("status") == "success":
             idn = res_json.get("id", "")
             serial = idn.split(",")[2].strip() if "," in idn and len(idn.split(",")) > 2 else None
             # print(f"[DEBUG] Scope {index} Serial: {serial}")  # Debug line
-            return SERIAL_TO_LABEL[target].get(serial, FALLBACK_SCOPE_LABELS[target][index])
+            return labels.SERIAL_TO_LABEL[target].get(serial, labels.FALLBACK_SCOPE_LABELS[target][index])
     except Exception as e:
         print(f"[ERROR] Could not resolve label for scope {index}: {e}")
-    return FALLBACK_SCOPE_LABELS[target][index]
+    return labels.FALLBACK_SCOPE_LABELS[target][index]
 
 
 def get_idn():
     row = input("Select row (row1, row2 ,row3,row4, row5 or all): ").strip()
     scope_indices = get_scope_selection()
-    targets = PI_IPS.keys() if row == 'all' else [row]
+    targets = labels.PI_IPS.keys() if row == 'all' else [row]
 
     for target in targets:
         if not check_server(target):
@@ -109,7 +68,7 @@ def get_idn():
         for i in scope_indices:
             label = resolve_label_from_id(target, i)
             try:
-                res = requests.get(f"{PI_IPS[target]}/idn", params={"scope": i}, timeout=3)
+                res = requests.get(f"{labels.PI_IPS[target]}/idn", params={"scope": i}, timeout=3)
                 res_json = res.json()
                 if res_json.get("status") == "success":
                     # print(f"{target} - {label}: {res_json.get('id', '')}")
@@ -124,7 +83,7 @@ def get_idn():
 def autoset():
     row = input("Select row (row1,row2 ,row3,row4, row5 or all): ").strip()
     scope_indices = get_scope_selection()
-    targets = PI_IPS.keys() if row == 'all' else [row]
+    targets = labels.PI_IPS.keys() if row == 'all' else [row]
 
     for target in targets:
         if not check_server(target):
@@ -132,7 +91,7 @@ def autoset():
         for i in scope_indices:
             label = resolve_label_from_id(target, i)
             try:
-                res = requests.get(f"{PI_IPS[target]}/autoset", params={"scope": i}, timeout=3)
+                res = requests.get(f"{labels.PI_IPS[target]}/autoset", params={"scope": i}, timeout=3)
                 res_json = res.json()
                 print(f"{target} - {label}: {res_json.get('message', 'No response')}")
             except Exception:
@@ -143,7 +102,7 @@ def set_coupling():
     scope_indices = get_scope_selection()
     ch = input("Enter channel (1-4): ").strip()
     mode = input("Enter mode (DC/AC/GND): ").strip().upper()
-    targets = PI_IPS.keys() if row == 'all' else [row]
+    targets = labels.PI_IPS.keys() if row == 'all' else [row]
 
     for target in targets:
         if not check_server(target):
@@ -152,7 +111,7 @@ def set_coupling():
             label = resolve_label_from_id(target, i)
             try:
                 res = requests.get(
-                    f"{PI_IPS[target]}/set_coupling",
+                    f"{labels.PI_IPS[target]}/set_coupling",
                     params={"scope": i, "channel": ch, "mode": mode}, timeout=3
                 )
                 res_json = res.json()
@@ -164,7 +123,7 @@ def get_coupling():
     row = input("Select row (row1, row2 ,row3,row4, row5 or all): ").strip()
     scope_indices = get_scope_selection()
     ch = input("Enter channel (1-4): ").strip()
-    targets = PI_IPS.keys() if row == 'all' else [row]
+    targets = labels.PI_IPS.keys() if row == 'all' else [row]
 
     for target in targets:
         if not check_server(target):
@@ -173,7 +132,7 @@ def get_coupling():
             label = resolve_label_from_id(target, i)
             try:
                 res = requests.get(
-                    f"{PI_IPS[target]}/get_coupling",
+                    f"{labels.PI_IPS[target]}/get_coupling",
                     params={"scope": i, "channel": ch}, timeout=3
                 )
                 res_json = res.json()
