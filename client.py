@@ -16,9 +16,12 @@ def check_server(target):
         return False
 
 def get_scope_selection(row):
-    scope_input = input("Enter label(s) (e.g. A1 or A1,A2 or 'all'): ").strip().upper()
+    available_labels = labels.FALLBACK_SCOPE_LABELS.get(row, [])
+    scope_input = input(f"Enter label(s): {', '.join(available_labels)} or 'all'): ").strip().upper()
+
     if scope_input == 'ALL':
-        return labels.FALLBACK_SCOPE_LABELS.get(row, [])
+        return available_labels
+    
     return [s.strip() for s in scope_input.split(",")]
     
 def send_command(command_name):

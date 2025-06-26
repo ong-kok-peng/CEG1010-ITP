@@ -15,19 +15,19 @@ PI_IPS = {
 }
 
 FALLBACK_SCOPE_LABELS = {
-    "row1": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
-    "row2": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
-    "row3": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
+    "row1": ["A1", "A2", "B1", "B2"],
+    "row2": ["A3", "A4", "B3", "B4"],
+    "row3": ["A5", "A6", "B5", "B6"],
     "row4": ["C1", "C2", "D1", "D2"],
-    "row5": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
-    "row6": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
-    "row7": ["Scope 0", "Scope 1"],
-    "row8": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
-    "row9": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
-    "row10": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
-    "row11": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
-    "row12": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
-    "row13": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"]
+    "row5": ["C3", "C4", "D3", "D4"],
+    "row6": ["C5", "C6", "D5", "D6"],
+    "row7": ["C7", "D7"],
+    "row8": ["E1", "E2", "F1", "F2"],
+    "row9": ["E3", "E4", "F3", "F4"],
+    "row10": ["E5", "E6", "F5", "F6"],
+    "row11": ["G1", "G2", "H1", "H2"],
+    "row12": ["G3", "G4", "H3", "H4"],
+    "row13": ["G5", "G6", "H5", "H6"]
 }
 
 # Updated serial to label mapping
