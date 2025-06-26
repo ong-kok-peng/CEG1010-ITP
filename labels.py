@@ -21,7 +21,7 @@ FALLBACK_SCOPE_LABELS = {
     "row4": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
     "row5": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
     "row6": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
-    "row7": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
+    "row7": ["Scope 0", "Scope 1"],
     "row8": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
     "row9": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
     "row10": ["Scope 0", "Scope 1", "Scope 2", "Scope 3"],
