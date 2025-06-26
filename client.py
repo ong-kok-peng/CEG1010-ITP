@@ -14,6 +14,7 @@ def check_server(target):
     except Exception:
         print(f"{target}: ❌ Server not reachable.")
         return False
+    
 
 def get_scope_selection(row):
     available_labels = labels.FALLBACK_SCOPE_LABELS.get(row, [])
@@ -23,23 +24,41 @@ def get_scope_selection(row):
         return available_labels
     
     return [s.strip() for s in scope_input.split(",")]
+
     
 def send_command(command_name):
-    row = input("Select row (row1, row2 ,row3,row4, row5 or all): ").strip()
-    scope_indices = get_scope_selection()
+    row = input("Select row (row1 - row13 or 'all'): ").strip().lower()
+    if row not in labels.PI_IPS and row != 'all':
+        print(f"[!] Invalid row: {row}")
+        return
+
+    scope_labels = get_scope_selection(row)
+    if not scope_labels:
+        print("[!] No valid scopes entered.")
+        return
+
     targets = labels.PI_IPS.keys() if row == 'all' else [row]
 
     for target in targets:
         if not check_server(target):
             continue
-        for i in scope_indices:
-            label = resolve_label_from_id(target, i)
+
+        for label in scope_labels:
             try:
-                res = requests.get(f"{labels.PI_IPS[target]}/{command_name}", params={"scope": i}, timeout=3)
+                res = requests.get(
+                    f"{labels.PI_IPS[target]}/{command_name}",
+                    params={"label": label},
+                    timeout=3
+                )
                 res_json = res.json()
-                print(f"{target} - {label}: {res_json.get('message', 'No response')}")
-            except Exception:
-                print(f"{target} - {label} 🚫: Failed to send {command_name.upper()} command.")
+                if res_json.get("status") == "success":
+                    print(f"{target} - {label}: ✅ {res_json.get('message', 'Command successful')}")
+                else:
+                    print(f"{target} - {label}: ❌ {res_json.get('message', 'Unknown error')}")
+            except Exception as e:
+                print(f"{target} - {label}: ❌ Failed to send {command_name.upper()} command: {e}")
+
+
 
 
 def resolve_label_from_id(target, index):
@@ -56,7 +75,7 @@ def resolve_label_from_id(target, index):
 
 
 def get_idn():
-    row = input("Select row (e.g. row4): ").strip()
+    row = input("Select row (row1 - row13): ").strip()
     if row not in labels.PI_IPS:
         print("[!] Invalid row.")
         return
@@ -77,7 +96,7 @@ def get_idn():
 
 
 def autoset():
-    row = input("Select row (e.g. row4): ").strip()
+    row = input("Select row (row1 - row13): ").strip()
     if row not in labels.PI_IPS:
         print("[!] Invalid row.")
         return
@@ -92,7 +111,7 @@ def autoset():
             print(f"{row} - {label} 🚫: Failed to send AUTOSET.")
 
 def set_coupling():
-    row = input("Select row (e.g. row4): ").strip()
+    row = input("Select row (row1 - row13): ").strip()
     if row not in labels.PI_IPS:
         print("[!] Invalid row.")
         return
@@ -110,7 +129,7 @@ def set_coupling():
 
 
 def get_coupling():
-    row = input("Select row (e.g. row4): ").strip()
+    row = input("Select row (row1 - row13): ").strip()
     if row not in labels.PI_IPS:
         print("[!] Invalid row.")
         return
@@ -126,7 +145,7 @@ def get_coupling():
             print(f"{row} - {label} 🚫: Failed to get coupling.")
 
 def send_command(endpoint):
-    row = input("Select row (e.g. row4): ").strip()
+    row = input("Select row (row1 - row13): ").strip()
     if row not in labels.PI_IPS:
         print("[!] Invalid row.")
         return
@@ -162,9 +181,9 @@ def main():
         elif choice == '4':
             get_coupling()
         elif choice == '5':
-            send_command("default")
+            send_command("default_settings")
         elif choice == '6':
-            send_command("proficiency")
+            send_command("proficiency_test")
         elif choice == '7':
             print("Exiting.")
             break
