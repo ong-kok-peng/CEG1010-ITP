@@ -59,8 +59,6 @@ def send_command(command_name):
                 print(f"{target} - {label}: ❌ Failed to send {command_name.upper()} command: {e}")
 
 
-
-
 def resolve_label_from_id(target, index):
     try:
         res = requests.get(f"{labels.PI_IPS[target]}/idn", params={"label": labels.FALLBACK_SCOPE_LABELS[target][index]}, timeout=3)
