@@ -7,7 +7,7 @@
 # ROW 2 - 172.18.82.2 (A3, A4, B3, B4)
 #SUBSYSTEM=="tty", ATTRS{serial}=="GEO200871", SYMLINK+="ttyA3"
 #SUBSYSTEM=="tty", ATTRS{serial}=="GEO142253", SYMLINK+="ttyA4"
-#SUBSYSTEM=="tty", ATTRS{serial}=="GEN151284", SYMLINK+="ttyB3"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEN151204", SYMLINK+="ttyB3"
 #SUBSYSTEM=="tty", ATTRS{serial}=="GEO142260", SYMLINK+="ttyB4"
 
 # ROW 3 - 172.18.82.3 (A5, A6, B5, B6)
