@@ -1,0 +1,75 @@
+# ROW 1 - 172.18.82.1 (A1, A2, B1, B2)
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEO142244", SYMLINK+="ttyA1"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEO142240", SYMLINK+="ttyA1"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEP131598", SYMLINK+="ttyB1"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEO142291", SYMLINK+="ttyB2"
+
+# ROW 2 - 172.18.82.2 (A3, A4, B3, B4)
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEO200871", SYMLINK+="ttyA3"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEO142253", SYMLINK+="ttyA4"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEN151204", SYMLINK+="ttyB3"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEO142260", SYMLINK+="ttyB4"
+
+# ROW 3 - 172.18.82.3 (A5, A6, B5, B6)
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEO142246", SYMLINK+="ttyA5"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEO142255", SYMLINK+="ttyA6"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEO142245", SYMLINK+="ttyB5"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEO142270", SYMLINK+="ttyB6"
+
+# ROW 4 - 172.18.82.4 (C1, C2, D1, D2)
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEO142331", SYMLINK+="ttyC1"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES854603", SYMLINK+="ttyC2"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES854610", SYMLINK+="ttyD1"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEP131593", SYMLINK+="ttyD2"
+
+# ROW 5 - 172.18.82.5 (C3, C4, D3, D4)
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEO142284", SYMLINK+="ttyC3"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEO200831", SYMLINK+="ttyC4"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEO142293", SYMLINK+="ttyD3"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEO142252", SYMLINK+="ttyD4"
+
+# ROW 6 - 172.18.82.6 (C5, C6, D5, D6)
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES854608", SYMLINK+="ttyC5"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES141320", SYMLINK+="ttyC6"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES854613", SYMLINK+="ttyD5"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES854614", SYMLINK+="ttyD6"
+
+# ROW 7 - 172.18.82.7 (C7, D7)
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES141323", SYMLINK+="ttyC7"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES141325", SYMLINK+="ttyD7"
+
+# ROW 8 - 172.18.82.8 (E1, E2, F1, F2)
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES854616", SYMLINK+="ttyE1"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES141330", SYMLINK+="ttyE2"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES854605", SYMLINK+="ttyF1"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES141343", SYMLINK+="ttyF2"
+
+# ROW 9 - 172.18.82.9 (E3, E4, F3, F4)
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES141335", SYMLINK+="ttyE3"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES141334", SYMLINK+="ttyE4"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES141338", SYMLINK+="ttyF3"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES854607", SYMLINK+="ttyF4"
+
+# ROW 10 - 172.18.82.10 (E5, E6, F5, F6)
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES854606", SYMLINK+="ttyE5"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES854612", SYMLINK+="ttyE6"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES854611", SYMLINK+="ttyF5"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES854615", SYMLINK+="ttyF6"
+
+# ROW 11 - 172.18.82.11 (G1, G2, H1, H2)
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEY180249", SYMLINK+="ttyG1"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEY180250", SYMLINK+="ttyG2"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEY180242", SYMLINK+="ttyH1"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEY180243", SYMLINK+="ttyH2"
+
+# ROW 12 - 172.18.82.12 (G3, G4, H3, H4)
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEY180251", SYMLINK+="ttyG3"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEY180252", SYMLINK+="ttyG4"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEY180245", SYMLINK+="ttyH3"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEY180246", SYMLINK+="ttyH4"
+
+# ROW 13 - 172.18.82.13 (G5, G6, H5, H6)
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEY180255", SYMLINK+="ttyG5"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GES141341", SYMLINK+="ttyG6"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEY180247", SYMLINK+="ttyH5"
+#SUBSYSTEM=="tty", ATTRS{serial}=="GEY180248", SYMLINK+="ttyH6"
