@@ -179,9 +179,9 @@ def main():
         elif choice == '4':
             get_coupling()
         elif choice == '5':
-            send_command("default_settings")
+            send_command("default")
         elif choice == '6':
-            send_command("proficiency_test")
+            send_command("proficiency")
         elif choice == '7':
             print("Exiting.")
             break
