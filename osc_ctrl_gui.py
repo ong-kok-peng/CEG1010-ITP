@@ -216,7 +216,7 @@ def build_widgets(root):
     oscs_listbox = tk.Listbox(osc_grps_frame, width=30, height=4, selectmode=tk.MULTIPLE, state=tk.DISABLED)
     oscs_listbox.grid(row=1, column=1, padx=5)
 
-    add_button(65, 585, "Re-Scan\noscillo-\nscopes", lambda: run_osc_function("SCAN OSCILLOSCOPES", obw.scan_connected_oscs), "lightgray")
+    add_button(65, 585, "Scan\noscillo-\nscopes", lambda: run_osc_function("SCAN OSCILLOSCOPES", obw.scan_connected_oscs), "lightgray")
     
 # ─────────────────────────────
 #  Program main function

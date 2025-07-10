@@ -13,25 +13,33 @@ def scan_connected_oscs(functionName):
     #scan for oscilloscope groups that are connected
     taskStatus[functionName] = "running"
     oscilloscopes = {"oscilloscope groups": [], "oscilloscope ids": []}
-    available_Osc_grps = list(labels.PI_IPS.keys())
     
-    connected_oscilloscope_groups = ["row1", "row3", "row8"]
+    connected_oscilloscope_groups_count = 0
+    taskStatusQueue.put((functionName, "Scanning for oscilloscope row(s)...\n"))
 
-    if len(connected_oscilloscope_groups) != 0:
-        taskStatusQueue.put((functionName, "Scanning for oscilloscope(s)...\n"))
-        for group in connected_oscilloscope_groups:
-            taskStatusQueue.put((functionName, f"Found oscilloscope group {group}!\n"))
+    for group in labels.PI_IPS.keys():
+        try:
+            res = requests.get(f"{labels.PI_IPS[group]}/", timeout=2)
+            if res.status_code == 200:
+                row_name = res.json().get("osc_row", "?")
+                taskStatusQueue.put((functionName, f"✅ Found oscilloscope group {group}: {row_name}!\n"))
 
-            oscilloscopes["oscilloscope groups"].append(group)
-            for osc_id in labels.SERIAL_TO_LABEL[group].values():
-                osc_id_string = f"{osc_id} ({group})"
-                oscilloscopes["oscilloscope ids"].append(osc_id_string)
-            sleep(1.5)
+                oscilloscopes["oscilloscope groups"].append(group)
+                for osc_id in labels.SERIAL_TO_LABEL[group].values():
+                    osc_id_string = f"{osc_id} ({group})"
+                    oscilloscopes["oscilloscope ids"].append(osc_id_string)
+                
+                connected_oscilloscope_groups_count += 1
+            else:
+                taskStatusQueue.put((functionName, f"{group}: ❌ Server check failed with status code {res.status_code}.\n"))
+        except Exception:
+            taskStatusQueue.put((functionName, f"{group}: ❌ Server not reachable.\n"))
 
+    if connected_oscilloscope_groups_count > 0:
         taskStatusQueue.put((functionName, oscilloscopes))
-        taskStatusQueue.put((functionName, "Finished scanning for oscilloscope(s)!\n"))
+        taskStatusQueue.put((functionName, f"{connected_oscilloscope_groups_count} oscilloscope group(s) found!\n"))
     else:
-        taskStatusQueue.put((functionName, "No connected oscilloscope groups found!\n"))
+        taskStatusQueue.put((functionName, "Finished scanning; no connected oscilloscope groups found!\n"))
 
     taskStatusQueue.put((functionName, "done"))
     taskStatus[functionName] = "stopped"
@@ -39,13 +47,26 @@ def scan_connected_oscs(functionName):
 def autoset(functionName):
     taskStatus[functionName] = "running"
     if len(selected_oscs) != 0: 
-        taskStatusQueue.put((functionName, "Applying AUTOSET for oscilloscope(s)...\n"))
-        for osc_grp in selected_oscs.keys():
-            taskStatusQueue.put((functionName, f"{selected_oscs[osc_grp]} in {osc_grp}\n"))
+        taskStatusQueue.put((functionName, "Applying AUTOSET for oscilloscope(s)...\n\n"))
 
-            sleep(5)
-            #autoset control code
-            taskStatusQueue.put((functionName, "Finished applying AUTOSET for oscilloscope(s)!\n"))
+        for oscilloscope_grp in selected_oscs.keys():
+            taskStatusQueue.put((functionName, f"In group {oscilloscope_grp}:\n"))
+
+            for oscilloscope_label in selected_oscs[oscilloscope_grp]:
+                try:
+                    res = requests.get(f"{labels.PI_IPS[oscilloscope_grp]}/autoset", params={"label": oscilloscope_label}, timeout=3)
+                    
+                    if res.json().get("status", "?") == "success":
+                        taskStatusQueue.put((functionName, f"✅ AUTOSET command sent to {oscilloscope_label} successfully!\n"))
+                    elif res.json().get("status", "?") == "error":
+                        err_msg = res.json().get("message", "?")
+                        taskStatusQueue.put((functionName, f"❌ Unable to AUTOSET {oscilloscope_label} because {err_msg}.\n"))
+
+                except Exception:
+                    taskStatusQueue.put((functionName, f"🚫: An exception occured when sending AUTOSET to {oscilloscope_label}.\n"))
+            taskStatusQueue.put((functionName, "\n")) # print newline in the console after every group is done
+
+        taskStatusQueue.put((functionName, "Finished applying AUTOSET for oscilloscope(s)!\n"))
 
     else: taskStatusQueue.put((functionName, "No oscilloscopes selected.\n"))
 
