@@ -4,9 +4,9 @@ After=network.target
 
 [Service]
 ExecStart=/usr/bin/python3 /home/ceg1010/server.py
-WorkingDirectory=/home/pi/oscilloscope
+WorkingDirectory=/home/ceg1010
 Restart=always
-User=pi
+User=ceg1010
 
 [Install]
 WantedBy=multi-user.target
