@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
 import OscilloscopeBgWorkers as obw
-from GUICallBacks import shutdownSelectedRow
+# from GUICallBacks import shutdownSelectedRow
 
 class App(tk.Tk):
     def build_background(self):

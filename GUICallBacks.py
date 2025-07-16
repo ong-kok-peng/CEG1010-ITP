@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import messagebox
 import OscilloscopeBgWorkers as obw
 import OscilloscopeLabels as labels #all the oscilloscope and oscilloscope groups definitions
-from OscilloscopeBgWorkers import shutdown_server
+# from OscilloscopeBgWorkers import shutdown_server
 
 def toggle_channel(self, ch_index, button):
     if self.channel_on_states[ch_index-1]:
