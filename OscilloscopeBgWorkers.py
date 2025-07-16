@@ -136,3 +136,19 @@ def proficiency_test(functionName):
 
     taskStatusQueue.put((functionName, "done"))
     taskStatus[functionName] = "stopped"
+
+
+# def shutdown_server(row_id):
+#     if row_id not in labels.PI_IPS:
+#         taskStatusQueue.put(("SHUTDOWN", f"[✗] Row {row_id} not found.\n"))
+#         return
+
+#     ip = labels.PI_IPS[row_id]
+#     try:
+#         res = requests.post(f"http://{ip}:5000/shutdown")
+#         if res.status_code == 200:
+#             taskStatusQueue.put(("SHUTDOWN", f"[✓] Sent shutdown command to {row_id} ({ip})\n"))
+#         else:
+#             taskStatusQueue.put(("SHUTDOWN", f"[✗] Failed to shutdown {row_id}: {res.text}\n"))
+#     except Exception as e:
+#         taskStatusQueue.put(("SHUTDOWN", f"[✗] Error connecting to {row_id}: {e}\n"))

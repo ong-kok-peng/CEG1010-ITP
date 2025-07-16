@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
 import OscilloscopeBgWorkers as obw
+from GUICallBacks import shutdownSelectedRow
 
 class App(tk.Tk):
     def build_background(self):
@@ -66,6 +67,10 @@ class App(tk.Tk):
         self.sel_oscs_radio = tk.Radiobutton(self.osc_grps_frame, text="Select Oscilloscopes", variable=self.selected_listbox, value="oscilloscopes", command=lambda: self.toggleSelListbox())
         self.sel_oscs_radio.grid(row=0, column=1)
 
+        # SHUTDOWN BUTTON
+        # self.shutdownBtn = tk.Button(self, text="Shutdown Row", font=("Calibri", 12), command=lambda: shutdownSelectedRow(self))
+
+
         #NOTE: the listbox binding events are only added in the toggle_sel_listbox callback
         self.osc_grps_listbox = tk.Listbox(self.osc_grps_frame, width=30, height=4, selectmode=tk.MULTIPLE, state=tk.DISABLED)
         self.osc_grps_listbox.grid(row=1, column=0)
@@ -75,6 +80,7 @@ class App(tk.Tk):
 
         self.scanOscsBtn = tk.Button(self, text="Scan\noscillo-\nscopes", bg="lightgray", relief="raised", width=8, command=lambda: self.runOscFunction("SCAN OSCILLOSCOPES", obw.scan_connected_oscs))
         self.canvas.create_window(65, 585, window=self.scanOscsBtn)
+
 
     def __init__(self):
         super().__init__()

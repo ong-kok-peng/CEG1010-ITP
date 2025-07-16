@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import messagebox
 import OscilloscopeBgWorkers as obw
 import OscilloscopeLabels as labels #all the oscilloscope and oscilloscope groups definitions
+from OscilloscopeBgWorkers import shutdown_server
 
 def toggle_channel(self, ch_index, button):
     if self.channel_on_states[ch_index-1]:
@@ -101,6 +102,10 @@ def checkFunctionOutput(self):
                 if type(output) is str:
                     if output == "done": self.screen_console.config(state=tk.DISABLED) #when function finishes disable the screen console
                     else: self.screen_console.insert(tk.END, output)
+
+            elif functionRunning == "SHUTDOWN":
+                if type(output) is str:
+                    self.screen_console.insert(tk.END, output)
     except queue.Empty:
         pass # No message in the queue
     finally:
@@ -112,3 +117,20 @@ def confirmWindowClose(self):
             self.destroy()
     else:
         self.destroy()
+
+# def shutdownSelectedRow(self):
+#     selected_indices = app.osc_grps_listbox.curselection()
+#     if not selected_indices:
+#         app.screen_console.config(state="normal")
+#         app.screen_console.insert("end", "[!] No row selected for shutdown.\n")
+#         app.screen_console.config(state="disabled")
+#         return
+
+#     selected_row = app.osc_grps_listbox.get(selected_indices[0])
+#     confirm = msgbox.askyesno("Shutdown Confirmation", f"Are you sure you want to shutdown {selected_row}?")
+
+#     if confirm:
+#         threading.Thread(target=shutdown_server, args=(selected_row,), daemon=True).start()
+#         app.screen_console.config(state="normal")
+#         app.screen_console.insert("end", f"[→] Sending shutdown to {selected_row}...\n")
+#         app.screen_console.config(state="disabled")
