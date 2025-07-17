@@ -3,21 +3,22 @@ import OscilloscopeLabels as labels #all the oscilloscope and oscilloscope group
 import queue as queue
 from time import sleep
 
-taskStatus = {"SCAN OSCILLOSCOPES": "stopped", "AUTOSET": "stopped", "DEFAULT": "stopped", "PROFICIENCY": "stopped"}
+taskStatus = {"SCAN OSCILLOSCOPES": "stopped", "AUTOSET": "stopped", "DEFAULT": "stopped", "PROFICIENCY": "stopped", "SHUTDOWN": "stopped"}
 taskStatusQueue = queue.Queue()
 previousTask = ""
 
 selected_oscs = {}
 
 def scan_connected_oscs(functionName):
-    #scan for oscilloscope groups that are connected
+    # thread to scan for oscilloscope groups that are connected, and return connected groups with all their 4 respective oscilloscope IDs
+
     taskStatus[functionName] = "running"
     oscilloscopes = {"oscilloscope groups": [], "oscilloscope ids": []}
 
     #uncomment the below to test the oscilloscope functions if scanning oscilloscopes is impossible (bypass the scanning)
-    #oscilloscopes_test = {"oscilloscope groups": ["row1", "row5"], 
-    #                      "oscilloscope ids": ["A1 (row1)", "A2 (row1)", "B1 (row1)", "B2 (row1)",
-    #                                           "C3 (row5)", "C4 (row5)", "D3 (row5)", "D4 (row5)"]}
+    oscilloscopes_test = {"oscilloscope groups": ["row1", "row5"], 
+                          "oscilloscope ids": ["A1 (row1)", "A2 (row1)", "B1 (row1)", "B2 (row1)",
+                                               "C3 (row5)", "C4 (row5)", "D3 (row5)", "D4 (row5)"]}
     
     taskStatusQueue.put((functionName, "Scanning for oscilloscope group(s)...\n\n"))
 
@@ -43,12 +44,39 @@ def scan_connected_oscs(functionName):
         taskStatusQueue.put((functionName, f"{len(oscilloscopes["oscilloscope groups"])} oscilloscope group(s) found!\n"))
     else:
         taskStatusQueue.put((functionName, "Finished scanning; no connected oscilloscope groups found!\n"))
-        #taskStatusQueue.put((functionName, oscilloscopes_test)) #uncomment this if bypassing scanning to test oscilloscope functions
+        taskStatusQueue.put((functionName, oscilloscopes_test)) #uncomment this if bypassing scanning to test oscilloscope functions
+
+    taskStatusQueue.put((functionName, "done"))
+    taskStatus[functionName] = "stopped"
+
+def shutdown_oscs(functionName):
+    # thread to shutdown the selected oscilloscope groups' raspberry pi server 
+
+    taskStatus[functionName] = "running"
+    if len(selected_oscs) != 0: 
+        taskStatusQueue.put((functionName, "Shutting down the oscilloscope group(s)...\n\n"))
+
+        for oscilloscope_grp in selected_oscs.keys():
+            try:
+                res = requests.post(f"{labels.PI_IPS[oscilloscope_grp]}/shutdown", timeout=2)
+                if res.status_code == 200:
+                    taskStatusQueue.put((functionName, f"✅ Successfully shutdown {oscilloscope_grp}!\n"))
+                else:
+                    err_msg = res.json().get("message", "?")
+                    taskStatusQueue.put((functionName, f"❌ Failed to shutdown {oscilloscope_grp} because {err_msg}.\n"))
+            except Exception:
+                taskStatusQueue.put((functionName, f"🚫: Exception occured when shutting down {oscilloscope_grp}.\n"))
+
+        taskStatusQueue.put((functionName, "Finished shutting down the oscilloscope group(s)!\n"))
+
+    else: taskStatusQueue.put((functionName, "No oscilloscope gorups selected.\n"))
 
     taskStatusQueue.put((functionName, "done"))
     taskStatus[functionName] = "stopped"
 
 def autoset(functionName):
+    # thread to set "autoset" to the selected oscilloscopes
+
     taskStatus[functionName] = "running"
     if len(selected_oscs) != 0: 
         taskStatusQueue.put((functionName, "Applying AUTOSET for oscilloscope(s)...\n\n"))
@@ -79,6 +107,8 @@ def autoset(functionName):
 
 
 def default(functionName):
+    # thread to set "default" to the selected oscilloscopes
+
     taskStatus[functionName] = "running"
     if len(selected_oscs) != 0: 
         taskStatusQueue.put((functionName, "Applying DEAFULT for oscilloscope(s)...\n\n"))
@@ -108,6 +138,8 @@ def default(functionName):
     taskStatus[functionName] = "stopped"
 
 def proficiency_test(functionName):
+    # thread to set "proficiency test" to the selected oscilloscopes
+
     taskStatus[functionName] = "running"
     if len(selected_oscs) != 0: 
         taskStatusQueue.put((functionName, "Applying proficiency test macro for oscilloscope(s)...\n\n"))
@@ -136,19 +168,3 @@ def proficiency_test(functionName):
 
     taskStatusQueue.put((functionName, "done"))
     taskStatus[functionName] = "stopped"
-
-
-# def shutdown_server(row_id):
-#     if row_id not in labels.PI_IPS:
-#         taskStatusQueue.put(("SHUTDOWN", f"[✗] Row {row_id} not found.\n"))
-#         return
-
-#     ip = labels.PI_IPS[row_id]
-#     try:
-#         res = requests.post(f"http://{ip}:5000/shutdown")
-#         if res.status_code == 200:
-#             taskStatusQueue.put(("SHUTDOWN", f"[✓] Sent shutdown command to {row_id} ({ip})\n"))
-#         else:
-#             taskStatusQueue.put(("SHUTDOWN", f"[✗] Failed to shutdown {row_id}: {res.text}\n"))
-#     except Exception as e:
-#         taskStatusQueue.put(("SHUTDOWN", f"[✗] Error connecting to {row_id}: {e}\n"))

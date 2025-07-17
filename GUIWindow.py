@@ -53,8 +53,12 @@ class App(tk.Tk):
         self.macroPanelLabel = tk.Label(self, text="Preset Macro Settings", font=("Arial", 15), fg="white", bg="#453A42")
         self.canvas.create_window(300, 450, window=self.macroPanelLabel)
 
-        self.proficiencyBtn = tk.Button(self, text="Proficiency", bg="lightgray", relief="raised", width=8, command=lambda: self.runOscFunction("PROFICIENCY", obw.proficiency_test))
+        self.proficiencyBtn = tk.Button(self, text="Proficiency\n", bg="lightgray", relief="raised", width=8, command=lambda: self.runOscFunction("PROFICIENCY", obw.proficiency_test))
         self.canvas.create_window(88, 485, window=self.proficiencyBtn)
+
+        self.shutdownBtn = tk.Button(self, text="Shutdown\nRow", bg="lightgray", relief="raised", width=8, command=lambda: self.runOscFunction("SHUTDOWN", obw.shutdown_oscs))
+        self.canvas.create_window(162, 485, window=self.shutdownBtn)
+
 
         #oscilloscope groups selection
         self.osc_grps_frame = tk.Frame(self, width=370, height=80)
@@ -66,10 +70,6 @@ class App(tk.Tk):
 
         self.sel_oscs_radio = tk.Radiobutton(self.osc_grps_frame, text="Select Oscilloscopes", variable=self.selected_listbox, value="oscilloscopes", command=lambda: self.toggleSelListbox())
         self.sel_oscs_radio.grid(row=0, column=1)
-
-        # SHUTDOWN BUTTON
-        # self.shutdownBtn = tk.Button(self, text="Shutdown Row", font=("Calibri", 12), command=lambda: shutdownSelectedRow(self))
-
 
         #NOTE: the listbox binding events are only added in the toggle_sel_listbox callback
         self.osc_grps_listbox = tk.Listbox(self.osc_grps_frame, width=30, height=4, selectmode=tk.MULTIPLE, state=tk.DISABLED)

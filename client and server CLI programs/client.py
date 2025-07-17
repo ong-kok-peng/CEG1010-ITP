@@ -1,9 +1,9 @@
 import requests
-import OscilloscopeLabels as labels
+import OscilloscopeLabels
 
 def check_server(target):
     try:
-        res = requests.get(f"{labels.PI_IPS[target]}/", timeout=2)
+        res = requests.get(f"{OscilloscopeLabels.PI_IPS[target]}/", timeout=2)
         if res.status_code == 200:
             row_name = res.json().get("osc_row", "?")
             print(f"{target}: ✅ {row_name} is active.")
@@ -17,7 +17,7 @@ def check_server(target):
     
 
 def get_scope_selection(row):
-    available_labels = labels.FALLBACK_SCOPE_LABELS.get(row, [])
+    available_labels = OscilloscopeLabels.FALLBACK_SCOPE_LABELS.get(row, [])
     scope_input = input(f"Enter label(s): {', '.join(available_labels)} or 'all'): ").strip().upper()
 
     if scope_input == 'ALL':
@@ -28,7 +28,7 @@ def get_scope_selection(row):
     
 def send_command(command_name):
     row = input("Select row (row1 - row13 or 'all'): ").strip().lower()
-    if row not in labels.PI_IPS and row != 'all':
+    if row not in OscilloscopeLabels.PI_IPS and row != 'all':
         print(f"[!] Invalid row: {row}")
         return
 
@@ -37,7 +37,7 @@ def send_command(command_name):
         print("[!] No valid scopes entered.")
         return
 
-    targets = labels.PI_IPS.keys() if row == 'all' else [row]
+    targets = OscilloscopeLabels.PI_IPS.keys() if row == 'all' else [row]
 
     for target in targets:
         if not check_server(target):
@@ -46,7 +46,7 @@ def send_command(command_name):
         for label in scope_labels:
             try:
                 res = requests.get(
-                    f"{labels.PI_IPS[target]}/{command_name}",
+                    f"{OscilloscopeLabels.PI_IPS[target]}/{command_name}",
                     params={"label": label},
                     timeout=3
                 )
@@ -61,20 +61,20 @@ def send_command(command_name):
 
 def resolve_label_from_id(target, index):
     try:
-        res = requests.get(f"{labels.PI_IPS[target]}/idn", params={"label": labels.FALLBACK_SCOPE_LABELS[target][index]}, timeout=3)
+        res = requests.get(f"{OscilloscopeLabels.PI_IPS[target]}/idn", params={"label": OscilloscopeLabels.FALLBACK_SCOPE_LABELS[target][index]}, timeout=3)
         res_json = res.json()
         if res_json.get("status") == "success":
             idn = res_json.get("id", "")
             serial = idn.split(",")[2].strip() if "," in idn and len(idn.split(",")) > 2 else None
-            return labels.SERIAL_TO_LABEL[target].get(serial, labels.FALLBACK_SCOPE_LABELS[target][index])
+            return OscilloscopeLabels.SERIAL_TO_LABEL[target].get(serial, OscilloscopeLabels.FALLBACK_SCOPE_LABELS[target][index])
     except Exception:
         pass
-    return labels.FALLBACK_SCOPE_LABELS[target][index]
+    return OscilloscopeLabels.FALLBACK_SCOPE_LABELS[target][index]
 
 
 def get_idn():
     row = input("Select row (row1 - row13): ").strip()
-    if row not in labels.PI_IPS:
+    if row not in OscilloscopeLabels.PI_IPS:
         print("[!] Invalid row.")
         return
     if not check_server(row):
@@ -82,7 +82,7 @@ def get_idn():
     labels_list = get_scope_selection(row)
     for label in labels_list:
         try:
-            res = requests.get(f"{labels.PI_IPS[row]}/idn", params={"label": label}, timeout=3)
+            res = requests.get(f"{OscilloscopeLabels.PI_IPS[row]}/idn", params={"label": label}, timeout=3)
             res_json = res.json()
             if res_json.get("status") == "success":
                 serial = res_json.get("id", "Unknown").split(",")[2].strip()
@@ -95,7 +95,7 @@ def get_idn():
 
 def autoset():
     row = input("Select row (row1 - row13): ").strip()
-    if row not in labels.PI_IPS:
+    if row not in OscilloscopeLabels.PI_IPS:
         print("[!] Invalid row.")
         return
     if not check_server(row):
@@ -103,14 +103,14 @@ def autoset():
     labels_list = get_scope_selection(row)
     for label in labels_list:
         try:
-            res = requests.get(f"{labels.PI_IPS[row]}/autoset", params={"label": label}, timeout=3)
+            res = requests.get(f"{OscilloscopeLabels.PI_IPS[row]}/autoset", params={"label": label}, timeout=3)
             print(f"{row} - {label}: {res.json().get('message', 'No response')}")
         except Exception:
             print(f"{row} - {label} 🚫: Failed to send AUTOSET.")
 
 def set_coupling():
     row = input("Select row (row1 - row13): ").strip()
-    if row not in labels.PI_IPS:
+    if row not in OscilloscopeLabels.PI_IPS:
         print("[!] Invalid row.")
         return
     if not check_server(row):
@@ -120,7 +120,7 @@ def set_coupling():
     mode = input("Enter mode (DC/AC/GND): ").strip().upper()
     for label in labels_list:
         try:
-            res = requests.get(f"{labels.PI_IPS[row]}/set_coupling", params={"label": label, "channel": ch, "mode": mode}, timeout=3)
+            res = requests.get(f"{OscilloscopeLabels.PI_IPS[row]}/set_coupling", params={"label": label, "channel": ch, "mode": mode}, timeout=3)
             print(f"{row} - {label}: {res.json().get('message', 'No response')}")
         except Exception:
             print(f"{row} - {label} 🚫: Failed to set coupling.")
@@ -128,7 +128,7 @@ def set_coupling():
 
 def get_coupling():
     row = input("Select row (row1 - row13): ").strip()
-    if row not in labels.PI_IPS:
+    if row not in OscilloscopeLabels.PI_IPS:
         print("[!] Invalid row.")
         return
     if not check_server(row):
@@ -137,14 +137,14 @@ def get_coupling():
     ch = input("Enter channel (1-4): ").strip()
     for label in labels_list:
         try:
-            res = requests.get(f"{labels.PI_IPS[row]}/get_coupling", params={"label": label, "channel": ch}, timeout=3)
+            res = requests.get(f"{OscilloscopeLabels.PI_IPS[row]}/get_coupling", params={"label": label, "channel": ch}, timeout=3)
             print(f"{row} - {label}: Coupling = {res.json().get('coupling', 'unknown')}")
         except Exception:
             print(f"{row} - {label} 🚫: Failed to get coupling.")
 
 def send_command(endpoint):
     row = input("Select row (row1 - row13): ").strip()
-    if row not in labels.PI_IPS:
+    if row not in OscilloscopeLabels.PI_IPS:
         print("[!] Invalid row.")
         return
     if not check_server(row):
@@ -152,7 +152,7 @@ def send_command(endpoint):
     labels_list = get_scope_selection(row)
     for label in labels_list:
         try:
-            res = requests.get(f"{labels.PI_IPS[row]}/{endpoint}", params={"label": label}, timeout=3)
+            res = requests.get(f"{OscilloscopeLabels.PI_IPS[row]}/{endpoint}", params={"label": label}, timeout=3)
             print(f"{row} - {label}: {res.json().get('message', 'No response')}")
         except Exception:
             print(f"{row} - {label} 🚫: Command failed.")

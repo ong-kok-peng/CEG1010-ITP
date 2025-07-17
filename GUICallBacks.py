@@ -3,10 +3,11 @@ import queue as queue
 import tkinter as tk
 from tkinter import messagebox
 import OscilloscopeBgWorkers as obw
-import OscilloscopeLabels as labels #all the oscilloscope and oscilloscope groups definitions
-# from OscilloscopeBgWorkers import shutdown_server
+import OscilloscopeLabels as labels # all the oscilloscope and oscilloscope groups definitions
 
 def toggle_channel(self, ch_index, button):
+    # callback function when the channel buttons are clicked, so as to toggle on/off state
+    
     if self.channel_on_states[ch_index-1]:
         button.config(bg="lightgray")
         print(f"Channel {ch_index} is OFF.\n")
@@ -17,6 +18,8 @@ def toggle_channel(self, ch_index, button):
     self.channel_on_states[ch_index-1] = not self.channel_on_states[ch_index-1]
 
 def add_oscs_selection(self, event):
+    # callback function when either of the oscilloscope selection list boxes is clicked, so as to re-retrieve the oscilloscope selections
+    
     obw.selected_oscs = {}
     oscilloscope_listbox = event.widget
     selected_indices = oscilloscope_listbox.curselection()
@@ -44,24 +47,30 @@ def add_oscs_selection(self, event):
     #print(obw.selected_oscs) 
 
 def toggle_sel_listbox(self):
-    if self.selected_listbox.get() == "oscilloscope groups":
-        #select oscilloscope groups
-        if self.osc_grps_listbox['state'] == tk.DISABLED:
-            self.osc_grps_listbox.config(state=tk.NORMAL); self.osc_grps_listbox.bind('<<ListboxSelect>>', self.addOscSelection)
-        if self.oscs_listbox['state'] == tk.NORMAL:
-            self.oscs_listbox.selection_clear(0, tk.END)
-            self.oscs_listbox.config(state=tk.DISABLED); self.oscs_listbox.unbind('<<ListboxSelect>>')
+    # callback function when the radio buttons are clicked, so as to toggle enable/disabke state of the list boxes
+    # but do nothing when any thread is running
 
-    elif self.selected_listbox.get() == "oscilloscopes":
-        #select oscilliscopes individually 
-        if self.oscs_listbox['state'] == tk.DISABLED:
-            self.oscs_listbox.config(state=tk.NORMAL); self.oscs_listbox.bind('<<ListboxSelect>>', self.addOscSelection)
-        if self.osc_grps_listbox['state'] == tk.NORMAL:
-            self.osc_grps_listbox.selection_clear(0, tk.END)
-            self.osc_grps_listbox.config(state=tk.DISABLED); self.osc_grps_listbox.unbind('<<ListboxSelect>>')
+    if "running" not in obw.taskStatus.values():
+        if self.selected_listbox.get() == "oscilloscope groups":
+            #select oscilloscope groups, so disable the individual oscilloscope selection, and unbind that event listener
+            if self.osc_grps_listbox['state'] == tk.DISABLED:
+                self.osc_grps_listbox.config(state=tk.NORMAL); self.osc_grps_listbox.bind('<<ListboxSelect>>', self.addOscSelection)
+            if self.oscs_listbox['state'] == tk.NORMAL:
+                self.oscs_listbox.selection_clear(0, tk.END)
+                self.oscs_listbox.config(state=tk.DISABLED); self.oscs_listbox.unbind('<<ListboxSelect>>')
+
+        elif self.selected_listbox.get() == "oscilloscopes":
+            #select oscilliscopes individually, so disable the oscilloscope groups selection, and unbind that event listener
+            if self.oscs_listbox['state'] == tk.DISABLED:
+                self.oscs_listbox.config(state=tk.NORMAL); self.oscs_listbox.bind('<<ListboxSelect>>', self.addOscSelection)
+            if self.osc_grps_listbox['state'] == tk.NORMAL:
+                self.osc_grps_listbox.selection_clear(0, tk.END)
+                self.osc_grps_listbox.config(state=tk.DISABLED); self.osc_grps_listbox.unbind('<<ListboxSelect>>')
 
 def run_osc_function(self, functionToRun, fn):
-    # if task is already running
+    # callback function when core oscilloscpe function buttons are clicked, i.e. autoset/proficiency, so as to start a separate thread
+
+    # check if task is already running
     if obw.taskStatus[functionToRun] == "running":  
         messagebox.showinfo(title="Information", message=f"{functionToRun} is currently running.")
         return
@@ -78,9 +87,14 @@ def run_osc_function(self, functionToRun, fn):
     newThread = Thread(target=fn, args=(functionToRun,), daemon=True)
     newThread.start()
     self.screen_console.config(state=tk.NORMAL); self.screen_console.delete("1.0", tk.END) # clear screen whenever any thread is to begin
+    # also, disable any enabled listboxes when starting a thread
+    if self.osc_grps_listbox['state'] == tk.NORMAL: self.osc_grps_listbox.config(state=tk.DISABLED)
+    if self.oscs_listbox['state'] == tk.NORMAL: self.oscs_listbox.config(state=tk.DISABLED)
     obw.previousTask = functionToRun
 
 def checkFunctionOutput(self):
+    # callback function to regularly poll every 100ms the thread queue for each thread updates
+
     try:
         while True:
             functionRunning, output = obw.taskStatusQueue.get_nowait()
@@ -98,39 +112,21 @@ def checkFunctionOutput(self):
 
                     self.osc_grps_listbox.config(state=tk.DISABLED); self.oscs_listbox.config(state=tk.DISABLED)
 
-            elif functionRunning == "AUTOSET" or functionRunning == "DEFAULT" or functionRunning == "PROFICIENCY":
+            elif functionRunning == "AUTOSET" or functionRunning == "DEFAULT" or functionRunning == "PROFICIENCY" or functionRunning == "SHUTDOWN":
                 if type(output) is str:
                     if output == "done": self.screen_console.config(state=tk.DISABLED) #when function finishes disable the screen console
                     else: self.screen_console.insert(tk.END, output)
 
-            elif functionRunning == "SHUTDOWN":
-                if type(output) is str:
-                    self.screen_console.insert(tk.END, output)
     except queue.Empty:
         pass # No message in the queue
     finally:
         self.after(100, self.checkFunctionOutput) # Poll again in 100ms
 
 def confirmWindowClose(self):
+    # callback function when the window "X" button is clicked, to prompt user whether to kill all running threads if they're still running
+
     if "running" in obw.taskStatus.values():
         if messagebox.askyesno(title="Confirm closing application?", message="There are still task(s) running in the application, they will terminate if closed. Are you sure you want to close?"):
             self.destroy()
     else:
         self.destroy()
-
-# def shutdownSelectedRow(self):
-#     selected_indices = app.osc_grps_listbox.curselection()
-#     if not selected_indices:
-#         app.screen_console.config(state="normal")
-#         app.screen_console.insert("end", "[!] No row selected for shutdown.\n")
-#         app.screen_console.config(state="disabled")
-#         return
-
-#     selected_row = app.osc_grps_listbox.get(selected_indices[0])
-#     confirm = msgbox.askyesno("Shutdown Confirmation", f"Are you sure you want to shutdown {selected_row}?")
-
-#     if confirm:
-#         threading.Thread(target=shutdown_server, args=(selected_row,), daemon=True).start()
-#         app.screen_console.config(state="normal")
-#         app.screen_console.insert("end", f"[→] Sending shutdown to {selected_row}...\n")
-#         app.screen_console.config(state="disabled")
