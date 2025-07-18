@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 import serial
 import time
 import default_and_proficiency
+import subprocess
 
 app = Flask(__name__)
 
@@ -151,8 +152,12 @@ def apply_proficiency():
 
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
-    Timer(1, lambda: os._exit(0)).start()
-    return jsonify({"status": "ok", "message": "Server will shut down."})
+    try:
+        subprocess.Popen(["sudo", "shutdown", "now"])
+        return jsonify({"status": "ok", "message": "Raspberry Pi is shutting down..."})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
 
 
 if __name__ == '__main__':
