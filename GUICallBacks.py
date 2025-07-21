@@ -44,7 +44,8 @@ def add_oscs_selection(self, event):
                     if osc_grp_id not in obw.selected_oscs: obw.selected_oscs[osc_grp_id] = [] #if key not exist create the group key
                     obw.selected_oscs[osc_grp_id].append(osc_id)   
 
-    #print(obw.selected_oscs) 
+    #print(obw.selected_oscs)
+
 
 def toggle_sel_listbox(self):
     # callback function when the radio buttons are clicked, so as to toggle enable/disabke state of the list boxes
@@ -66,6 +67,18 @@ def toggle_sel_listbox(self):
             if self.osc_grps_listbox['state'] == tk.NORMAL:
                 self.osc_grps_listbox.selection_clear(0, tk.END)
                 self.osc_grps_listbox.config(state=tk.DISABLED); self.osc_grps_listbox.unbind('<<ListboxSelect>>')
+
+
+def scanOscsBtn_on_press(self, event):
+    self.canvas.itemconfig(self.scanOscsBtn, fill="darkgray", outline="black")
+    self.canvas.itemconfig(self.scanOscsBtnText, fill="white")
+
+
+def scanOscsBtn_on_release(self, event):
+    self.canvas.itemconfig(self.scanOscsBtn, fill="lightgray", outline="gray")
+    self.canvas.itemconfig(self.scanOscsBtnText, fill="black")
+    self.runOscFunction("SCAN OSCILLOSCOPES", obw.scan_connected_oscs)
+    
 
 def run_osc_function(self, functionToRun, fn):
     # callback function when core oscilloscpe function buttons are clicked, i.e. autoset/proficiency, so as to start a separate thread

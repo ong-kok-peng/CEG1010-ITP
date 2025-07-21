@@ -16,9 +16,9 @@ def scan_connected_oscs(functionName):
     oscilloscopes = {"oscilloscope groups": [], "oscilloscope ids": []}
 
     #uncomment the below to test the oscilloscope functions if scanning oscilloscopes is impossible (bypass the scanning)
-    oscilloscopes_test = {"oscilloscope groups": ["row1", "row5"], 
-                          "oscilloscope ids": ["A1 (row1)", "A2 (row1)", "B1 (row1)", "B2 (row1)",
-                                               "C3 (row5)", "C4 (row5)", "D3 (row5)", "D4 (row5)"]}
+    #oscilloscopes_test = {"oscilloscope groups": ["row1", "row5"], 
+    #                      "oscilloscope ids": ["A1 (row1)", "A2 (row1)", "B1 (row1)", "B2 (row1)",
+    #                                           "C3 (row5)", "C4 (row5)", "D3 (row5)", "D4 (row5)"]}
     
     taskStatusQueue.put((functionName, "Scanning for oscilloscope group(s)...\n\n"))
 
@@ -44,7 +44,7 @@ def scan_connected_oscs(functionName):
         taskStatusQueue.put((functionName, f"{len(oscilloscopes["oscilloscope groups"])} oscilloscope group(s) found!\n"))
     else:
         taskStatusQueue.put((functionName, "Finished scanning; no connected oscilloscope groups found!\n"))
-        taskStatusQueue.put((functionName, oscilloscopes_test)) #uncomment this if bypassing scanning to test oscilloscope functions
+        #taskStatusQueue.put((functionName, oscilloscopes_test)) #uncomment this if bypassing scanning to test oscilloscope functions
 
     taskStatusQueue.put((functionName, "done"))
     taskStatus[functionName] = "stopped"
