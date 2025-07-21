@@ -111,7 +111,7 @@ def default(functionName):
 
     taskStatus[functionName] = "running"
     if len(selected_oscs) != 0: 
-        taskStatusQueue.put((functionName, "Applying DEAFULT for oscilloscope(s)...\n\n"))
+        taskStatusQueue.put((functionName, "Applying DEFAULT for oscilloscope(s)...\n\n"))
 
         for oscilloscope_grp in selected_oscs.keys():
             taskStatusQueue.put((functionName, f"In group {oscilloscope_grp}:\n")) # print this at the start of processing every group

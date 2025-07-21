@@ -18,10 +18,10 @@ class App(tk.Tk):
         #NOTE: All buttons position bounds are based on center point
 
         #create autoset and default buttons
-        self.autosetBtn = tk.Button(self, text="Autoset", command=lambda: self.runOscFunction("AUTOSET", obw.autoset), bg="lightgray", relief="raised", width=8)
+        self.autosetBtn = tk.Button(self, text="Autoset", fg="white", command=lambda: self.runOscFunction("AUTOSET", obw.autoset), bg="#0041C2", relief="raised", width=8)
         self.canvas.create_window(1150, 50, window=self.autosetBtn)
 
-        self.defaultBtn = tk.Button(self, text="Default", command=lambda: self.runOscFunction("DEFAULT", obw.default), bg="lightgray", relief="raised", width=8)
+        self.defaultBtn = tk.Button(self, text="Default", fg="white", command=lambda: self.runOscFunction("DEFAULT", obw.default), bg="#575757", relief="raised", width=8)
         self.canvas.create_window(1150, 180, window=self.defaultBtn)
 
         #create the ch1 to ch4 buttons
@@ -56,8 +56,8 @@ class App(tk.Tk):
         self.proficiencyBtn = tk.Button(self, text="Proficiency\n", bg="lightgray", relief="raised", width=8, command=lambda: self.runOscFunction("PROFICIENCY", obw.proficiency_test))
         self.canvas.create_window(88, 485, window=self.proficiencyBtn)
 
-        self.shutdownBtn = tk.Button(self, text="Shutdown\nRow", bg="lightgray", relief="raised", width=8, command=lambda: self.runOscFunction("SHUTDOWN", obw.shutdown_oscs))
-        self.canvas.create_window(162, 485, window=self.shutdownBtn)
+        self.shutdownBtn = tk.Button(self, text="Shutdown\nRow", fg="white", bg="#c21807", relief="raised", width=8, command=lambda: self.runOscFunction("SHUTDOWN", obw.shutdown_oscs))
+        self.canvas.create_window(530, 585, window=self.shutdownBtn)
 
 
         #oscilloscope groups selection
@@ -78,8 +78,31 @@ class App(tk.Tk):
         self.oscs_listbox = tk.Listbox(self.osc_grps_frame, width=30, height=4, selectmode=tk.MULTIPLE, state=tk.DISABLED)
         self.oscs_listbox.grid(row=1, column=1, padx=5)
 
-        self.scanOscsBtn = tk.Button(self, text="Scan\noscillo-\nscopes", bg="lightgray", relief="raised", width=8, command=lambda: self.runOscFunction("SCAN OSCILLOSCOPES", obw.scan_connected_oscs))
-        self.canvas.create_window(65, 585, window=self.scanOscsBtn)
+        # self.scanOscsBtn = tk.Button(self, text="Scan\noscillo-\nscopes", bg="lightgray", relief="raised", width=8, command=lambda: self.runOscFunction("SCAN OSCILLOSCOPES", obw.scan_connected_oscs))
+        # self.canvas.create_window(65, 585, window=self.scanOscsBtn)
+
+        # Draw raised circular button
+        self.scanOscsCircle = self.canvas.create_oval(30, 550, 100, 620, fill="lightgray", outline="gray", width=2)
+
+        # Add label inside the circle
+        self.scanOscsText = self.canvas.create_text(65, 585, text="Scan\noscillo-\nscopes", font=("Arial", 8), justify="center")
+
+        # Define press effect functions
+        def on_press(event):
+            self.canvas.itemconfig(self.scanOscsCircle, fill="darkgray", outline="black")
+            self.canvas.itemconfig(self.scanOscsText, fill="white")
+
+        def on_release(event):
+            self.canvas.itemconfig(self.scanOscsCircle, fill="lightgray", outline="gray")
+            self.canvas.itemconfig(self.scanOscsText, fill="black")
+            self.runOscFunction("SCAN OSCILLOSCOPES", obw.scan_connected_oscs)
+
+        # Bind mouse events to simulate button press
+        for tag in [self.scanOscsCircle, self.scanOscsText]:
+            self.canvas.tag_bind(tag, "<Button-1>", on_press)
+            self.canvas.tag_bind(tag, "<ButtonRelease-1>", on_release)
+
+
 
 
     def __init__(self):
