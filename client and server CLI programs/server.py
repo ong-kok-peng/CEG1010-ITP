@@ -4,6 +4,7 @@ import serial
 import time
 import default_and_proficiency
 import subprocess
+import random
 
 app = Flask(__name__)
 
@@ -158,6 +159,41 @@ def shutdown():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
 
+
+@app.route('/scramble', methods=['GET'])
+def scramble_settings():
+    label = request.args.get("label")
+    if label not in LABEL_TO_PORT:
+        return jsonify({"status": "error", "message": "Invalid oscilloscope label."})
+
+    ser = get_serial_connection(label)
+    if not ser:
+        return jsonify({"status": "error", "message": f"{label} unavailable"})
+
+    try:
+        # Random vertical scale (0.2 to 5.0)
+        vscale = random.choice([0.2, 0.5, 1.0, 2.0, 5.0])
+        ser.write(f":CHAN1:SCAL {vscale}\n".encode())
+
+        # Random time base (1ms to 500us)
+        tscale = random.choice([1e-3, 5e-4, 2e-3])
+        ser.write(f":TIM:SCAL {tscale}\n".encode())
+
+        # Random coupling: DC, AC, or GND
+        coupling = random.choice(["DC", "AC", "GND"])
+        ser.write(f":CHAN1:COUP {coupling}\n".encode())
+
+	# Randomize channel display states for CH1 to CH4
+        for ch in range(1, 5):
+            state = "OFF" if random.choice([True, False]) else "ON"
+            ser.write(f":CHAN{ch}:DISP {state}\n".encode())
+
+        ser.close()
+        return jsonify({"status": "success", "message": f"Scrambled settings for {label}"})
+
+    except Exception as e:
+        ser.close()
+        return jsonify({"status": "error", "message": str(e)})
 
 
 if __name__ == '__main__':

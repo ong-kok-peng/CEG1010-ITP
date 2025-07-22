@@ -3,7 +3,7 @@ import OscilloscopeLabels as labels #all the oscilloscope and oscilloscope group
 import queue as queue
 from time import sleep
 
-taskStatus = {"SCAN OSCILLOSCOPES": "stopped", "AUTOSET": "stopped", "DEFAULT": "stopped", "PROFICIENCY": "stopped", "SHUTDOWN": "stopped"}
+taskStatus = {"SCAN OSCILLOSCOPES": "stopped", "AUTOSET": "stopped", "DEFAULT": "stopped", "PROFICIENCY": "stopped", "SHUTDOWN": "stopped", "IDN": "stopped", "SCRAMBLE": "stopped"}
 taskStatusQueue = queue.Queue()
 previousTask = ""
 
@@ -168,3 +168,63 @@ def proficiency_test(functionName):
 
     taskStatusQueue.put((functionName, "done"))
     taskStatus[functionName] = "stopped"
+
+def get_idn(functionName):
+    taskStatus[functionName] = "running"
+    if len(selected_oscs) != 0:
+        taskStatusQueue.put((functionName, "Showing IDN for following scope(s) . . .\n\n"))
+
+        for oscilloscope_grp in selected_oscs.keys():
+            taskStatusQueue.put((functionName, f"In group {oscilloscope_grp}:\n"))
+
+            for oscilloscope_label in selected_oscs[oscilloscope_grp]:
+                try:
+                    res = requests.get(f"{labels.PI_IPS[oscilloscope_grp]}/idn", params={"label": oscilloscope_label}, timeout=3)
+
+                    if res.json().get("status", "?") == "success":
+                        scope_id = res.json().get("id", "?")
+                        taskStatusQueue.put((functionName, f"🔹 {oscilloscope_label}: {scope_id}\n"))
+                    elif res.json().get("status", "?") == "error":
+                        err_msg = res.json().get("message", "?")
+                        taskStatusQueue.put((functionName, f"❌ {oscilloscope_label}: {err_msg}\n"))
+
+                except Exception:
+                    taskStatusQueue.put((functionName, f"🚫 {oscilloscope_label}: Timeout or no response.\n"))
+
+            taskStatusQueue.put((functionName, "\n"))
+
+        taskStatusQueue.put((functionName, "Finished retrieving IDN info.\n"))
+
+    else: taskStatusQueue.put((functionName, "No oscilloscopes selected.\n"))
+
+    taskStatusQueue.put((functionName, "done"))
+    taskStatus[functionName] = "stopped"
+
+def scramble(functionName):
+    taskStatus[functionName] = "running"
+    if len(selected_oscs) != 0: 
+        taskStatusQueue.put((functionName, "Scrambling oscilloscope(s)...\n\n"))
+
+        for oscilloscope_grp in selected_oscs.keys():
+            taskStatusQueue.put((functionName, f"In group {oscilloscope_grp}:\n"))
+
+            for oscilloscope_label in selected_oscs[oscilloscope_grp]:
+                try:
+                    res = requests.get(f"{labels.PI_IPS[oscilloscope_grp]}/scramble", params={"label": oscilloscope_label}, timeout=3)
+                    if res.json().get("status") == "success":
+                        taskStatusQueue.put((functionName, f"✅ Scrambled {oscilloscope_label} successfully!\n"))
+                    else:
+                        taskStatusQueue.put((functionName, f"❌ Failed to scramble {oscilloscope_label}: {res.json().get('message')}\n"))
+
+                except Exception:
+                    taskStatusQueue.put((functionName, f"🚫 Exception while scrambling {oscilloscope_label}.\n"))
+            taskStatusQueue.put((functionName, "\n"))
+
+        taskStatusQueue.put((functionName, "Scrambling done!\n"))
+
+    else:
+        taskStatusQueue.put((functionName, "No oscilloscopes selected.\n"))
+
+    taskStatusQueue.put((functionName, "done"))
+    taskStatus[functionName] = "stopped"
+

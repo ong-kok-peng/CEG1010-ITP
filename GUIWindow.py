@@ -19,7 +19,7 @@ class App(tk.Tk):
 
         #create autoset and default buttons
         self.autosetBtn = tk.Button(self, text="Autoset", fg="white", command=lambda: self.runOscFunction("AUTOSET", obw.autoset), bg="#0041C2", relief="raised", width=8)
-        self.canvas.create_window(1150, 50, window=self.autosetBtn)
+        self.canvas.create_window(1150, 47, window=self.autosetBtn)
 
         self.defaultBtn = tk.Button(self, text="Default", fg="white", command=lambda: self.runOscFunction("DEFAULT", obw.default), bg="#575757", relief="raised", width=8)
         self.canvas.create_window(1150, 180, window=self.defaultBtn)
@@ -55,6 +55,13 @@ class App(tk.Tk):
 
         self.proficiencyBtn = tk.Button(self, text="Proficiency\n", bg="lightgray", relief="raised", width=8, command=lambda: self.runOscFunction("PROFICIENCY", obw.proficiency_test))
         self.canvas.create_window(88, 485, window=self.proficiencyBtn)
+
+        self.idnBtn = tk.Button(self, text="IDN\n", bg="#4A90E2", relief="raised", width=8, command=lambda: self.runOscFunction("IDN", obw.get_idn))
+        self.canvas.create_window(162, 485, window=self.idnBtn)
+
+        self.scrambleBtn = tk.Button(self, text="Scramble\n", bg="#FFA500", relief="raised", width=8, command=lambda: self.runOscFunction("SCRAMBLE", obw.scramble))
+        self.canvas.create_window(235, 485, window=self.scrambleBtn)
+
 
         self.shutdownBtn = tk.Button(self, text="Shutdown\nRow", fg="white", bg="#c21807", relief="raised", width=8, command=lambda: self.runOscFunction("SHUTDOWN", obw.shutdown_oscs))
         self.canvas.create_window(530, 585, window=self.shutdownBtn)

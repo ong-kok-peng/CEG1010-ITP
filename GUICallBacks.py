@@ -125,10 +125,13 @@ def checkFunctionOutput(self):
 
                     self.osc_grps_listbox.config(state=tk.DISABLED); self.oscs_listbox.config(state=tk.DISABLED)
 
-            elif functionRunning == "AUTOSET" or functionRunning == "DEFAULT" or functionRunning == "PROFICIENCY" or functionRunning == "SHUTDOWN":
+            elif functionRunning == "AUTOSET" or functionRunning == "DEFAULT" or functionRunning == "PROFICIENCY" or functionRunning == "SHUTDOWN" or functionRunning == "IDN" or functionRunning == "SCRAMBLE":
                 if type(output) is str:
                     if output == "done": self.screen_console.config(state=tk.DISABLED) #when function finishes disable the screen console
-                    else: self.screen_console.insert(tk.END, output)
+                    else:
+                        self.screen_console.insert(tk.END, output)
+                        self.screen_console.see(tk.END)
+
 
     except queue.Empty:
         pass # No message in the queue
