@@ -183,7 +183,7 @@ def scramble_settings():
         coupling = random.choice(["DC", "AC", "GND"])
         ser.write(f":CHAN1:COUP {coupling}\n".encode())
 
-	# Randomize channel display states for CH1 to CH4
+	    # Randomize channel display states for CH1 to CH4
         for ch in range(1, 5):
             state = "OFF" if random.choice([True, False]) else "ON"
             ser.write(f":CHAN{ch}:DISP {state}\n".encode())
